@@ -53,6 +53,18 @@
         "title": "Jarvis: Discover Cascade Commands"
       },
       {
+        "command": "jarvis.testQuickChat",
+        "title": "Jarvis: Test Quick Chat Command (Ctrl+Shift+I)"
+      },
+      {
+        "command": "jarvis.investigateCascade",
+        "title": "Jarvis: Investigate Cascade Integration (Full)"
+      },
+      {
+        "command": "jarvis.testCascadeMethods",
+        "title": "Jarvis: Test Cascade Message Methods"
+      },
+      {
         "command": "jarvis.testConversation",
         "title": "Jarvis: Test Conversation (Simulated)"
       },

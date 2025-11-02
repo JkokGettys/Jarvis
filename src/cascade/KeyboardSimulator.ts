@@ -11,15 +11,15 @@ export class KeyboardSimulator {
     
     /**
      * Send Ctrl+V to paste from clipboard
+     * Uses the same reliable method as typeText
      */
     static async pasteFromClipboard(): Promise<void> {
-        const script = `
-Add-Type -AssemblyName System.Windows.Forms
-[System.Windows.Forms.SendKeys]::SendWait("^v")
-        `.trim();
-        
         try {
+            // Use PowerShell to send Ctrl+V more reliably
+            // This matches the method used in typeText which we know works
+            const script = `Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('^v')`;
             await execAsync(`powershell -Command "${script}"`);
+            console.log('  ✓ Ctrl+V sent via PowerShell');
         } catch (error) {
             console.error('Failed to simulate Ctrl+V:', error);
             throw error;
@@ -49,6 +49,20 @@ Add-Type -AssemblyName System.Windows.Forms
             await execAsync(`powershell -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('^l')"`);
         } catch (error) {
             console.error('Failed to send Ctrl+L:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Send Ctrl+Shift+I to open quick chat
+     * Note: This sends keystrokes to whatever window is currently focused!
+     */
+    static async openQuickChat(): Promise<void> {
+        try {
+            await execAsync(`powershell -Command "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('^+i')"`);
+            console.log('  ✓ Ctrl+Shift+I keystroke sent');
+        } catch (error) {
+            console.error('Failed to send Ctrl+Shift+I:', error);
             throw error;
         }
     }

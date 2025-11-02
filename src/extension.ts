@@ -199,6 +199,143 @@ export function activate(context: vscode.ExtensionContext) {
         })
     );
 
+    // TEST: Test the Ctrl+Shift+I quick chat command
+    context.subscriptions.push(
+        vscode.commands.registerCommand('jarvis.testQuickChat', async () => {
+            const testPrompt = await vscode.window.showInputBox({
+                prompt: 'Enter test prompt for Ctrl+Shift+I command',
+                value: 'Hello from Jarvis quick chat test'
+            });
+            
+            if (!testPrompt) {
+                return;
+            }
+            
+            vscode.window.showInformationMessage('Testing quick chat command... Watch for popup messages!');
+            const result = await cascadeBridge.testQuickChatCommand(testPrompt);
+            
+            if (result.success && result.workingCommand) {
+                const msg = `✅ Working command: ${result.workingCommand} (method: ${result.method})`;
+                console.log(msg);
+                vscode.window.showInformationMessage(msg);
+                
+                // Show results in output panel
+                const outputChannel = vscode.window.createOutputChannel('Jarvis Quick Chat Test');
+                outputChannel.clear();
+                outputChannel.appendLine('=== QUICK CHAT TEST RESULTS ===\n');
+                outputChannel.appendLine(`✅ SUCCESS!\n`);
+                outputChannel.appendLine(`Working command: ${result.workingCommand}`);
+                outputChannel.appendLine(`Method: ${result.method}`);
+                outputChannel.appendLine(`\nTest prompt: "${testPrompt}"`);
+                outputChannel.appendLine('\nCheck if the text appeared in the quick chat window!');
+                outputChannel.show();
+            } else {
+                vscode.window.showWarningMessage('❌ Could not trigger quick chat programmatically. Check console.');
+            }
+        })
+    );
+
+    // INVESTIGATE: Comprehensive Cascade integration investigation
+    context.subscriptions.push(
+        vscode.commands.registerCommand('jarvis.investigateCascade', async () => {
+            try {
+                vscode.window.showInformationMessage('Investigating Cascade integration... Check console.');
+                const results = await cascadeBridge.investigateCascadeIntegration();
+                
+                const outputChannel = vscode.window.createOutputChannel('Jarvis Cascade Investigation');
+                outputChannel.clear();
+                outputChannel.appendLine('=== CASCADE INTEGRATION INVESTIGATION ===\n');
+                
+                outputChannel.appendLine(`📦 Extensions: ${results.extensions.length} found`);
+                results.extensions.forEach(ext => {
+                    outputChannel.appendLine(`  - ${ext.id}`);
+                    outputChannel.appendLine(`    Active: ${ext.isActive}, Exports: ${ext.exports.join(', ') || 'none'}`);
+                });
+                outputChannel.appendLine('');
+                
+                outputChannel.appendLine(`🔧 Commands: ${results.commands.length} found`);
+                results.commands.forEach(cmd => outputChannel.appendLine(`  - ${cmd}`));
+                outputChannel.appendLine('');
+                
+                outputChannel.appendLine(`📄 Documents: ${results.documents.length} found`);
+                results.documents.forEach(doc => outputChannel.appendLine(`  - ${doc.scheme}://${doc.fileName}`));
+                outputChannel.appendLine('');
+                
+                outputChannel.appendLine('🖥️  Webviews:');
+                outputChannel.appendLine(JSON.stringify(results.webviews, null, 2));
+                outputChannel.appendLine('');
+                
+                outputChannel.appendLine('💬 Chat API:');
+                outputChannel.appendLine(JSON.stringify(results.chatParticipants, null, 2));
+                outputChannel.appendLine('');
+                
+                outputChannel.appendLine('=== Full results also in Developer Console (Ctrl+Shift+I) ===');
+                outputChannel.show();
+                
+                vscode.window.showInformationMessage('Investigation complete! Check Output panel and Developer Console.');
+            } catch (error) {
+                const errorMsg = error instanceof Error ? error.message : String(error);
+                console.error('Investigation error:', error);
+                vscode.window.showErrorMessage(`Investigation failed: ${errorMsg}. Check Developer Console for details.`);
+            }
+        })
+    );
+
+    // TEST: Test different methods to send messages to Cascade
+    context.subscriptions.push(
+        vscode.commands.registerCommand('jarvis.testCascadeMethods', async () => {
+            try {
+                const testPrompt = await vscode.window.showInputBox({
+                    prompt: 'Enter test prompt to send to Cascade',
+                    value: 'Hello from Jarvis test'
+                });
+                
+                if (!testPrompt) {
+                    return;
+                }
+                
+                vscode.window.showInformationMessage('Testing Cascade message methods... Check console.');
+                const results = await cascadeBridge.testCascadeMessageMethods(testPrompt);
+                
+                const outputChannel = vscode.window.createOutputChannel('Jarvis Cascade Method Test');
+                outputChannel.clear();
+                outputChannel.appendLine('=== CASCADE MESSAGE METHOD TEST RESULTS ===\n');
+                outputChannel.appendLine(`Test prompt: "${testPrompt}"\n`);
+                
+                const successful = results.filter(r => r.success);
+                const failed = results.filter(r => !r.success);
+                
+                if (successful.length > 0) {
+                    outputChannel.appendLine('✅ SUCCESSFUL METHODS:\n');
+                    successful.forEach(r => outputChannel.appendLine(`  ✓ ${r.method}`));
+                    outputChannel.appendLine('');
+                    vscode.window.showInformationMessage(`🎉 Found working method: ${successful[0].method}!`);
+                }
+                
+                if (failed.length > 0) {
+                    outputChannel.appendLine('❌ FAILED METHODS:\n');
+                    failed.forEach(r => {
+                        outputChannel.appendLine(`  ✗ ${r.method}`);
+                        if (r.error) {
+                            outputChannel.appendLine(`    Error: ${r.error}`);
+                        }
+                    });
+                }
+                
+                outputChannel.appendLine('\n=== Full results also in Developer Console (Ctrl+Shift+I) ===');
+                outputChannel.show();
+                
+                if (successful.length === 0) {
+                    vscode.window.showWarningMessage('No working method found. See Output panel for details.');
+                }
+            } catch (error) {
+                const errorMsg = error instanceof Error ? error.message : String(error);
+                console.error('Test methods error:', error);
+                vscode.window.showErrorMessage(`Test failed: ${errorMsg}. Check Developer Console for details.`);
+            }
+        })
+    );
+
     // VIEW COMMAND: View last MCP summary
     context.subscriptions.push(
         vscode.commands.registerCommand('jarvis.viewLastMCPSummary', async () => {
