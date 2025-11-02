@@ -1,0 +1,222 @@
+{
+  "name": "jarvis-voice-assistant",
+  "displayName": "Jarvis - Voice Assistant for Windsurf",
+  "description": "Hands-free voice-controlled AI assistant for Windsurf Cascade",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "enabledApiProposals": [
+    "terminalDataWriteEvent"
+  ],
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "jarvis.startListening",
+        "title": "Jarvis: Start Listening"
+      },
+      {
+        "command": "jarvis.stopListening",
+        "title": "Jarvis: Stop Listening"
+      },
+      {
+        "command": "jarvis.toggleListening",
+        "title": "Jarvis: Toggle Listening"
+      },
+      {
+        "command": "jarvis.sendPrompt",
+        "title": "Jarvis: Send Prompt to Cascade"
+      },
+      {
+        "command": "jarvis.readLastResponse",
+        "title": "Jarvis: Read Last Response"
+      },
+      {
+        "command": "jarvis.summarizeDiff",
+        "title": "Jarvis: Summarize Diff"
+      },
+      {
+        "command": "jarvis.toggleMute",
+        "title": "Jarvis: Toggle Mute"
+      },
+      {
+        "command": "jarvis.discoverCascade",
+        "title": "Jarvis: Discover Cascade Commands"
+      },
+      {
+        "command": "jarvis.testConversation",
+        "title": "Jarvis: Test Conversation (Simulated)"
+      },
+      {
+        "command": "jarvis.testMCPParser",
+        "title": "Jarvis: Test MCP Fallback Parser"
+      },
+      {
+        "command": "jarvis.viewLastMCPSummary",
+        "title": "Jarvis: View Last MCP Summary"
+      },
+      {
+        "command": "jarvis.changeVoice",
+        "title": "Jarvis: Change Voice"
+      }
+    ],
+    "configuration": {
+      "title": "Jarvis Voice Assistant",
+      "properties": {
+        "jarvis.wakeword.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Require wakeword to activate voice input"
+        },
+        "jarvis.wakeword.phrase": {
+          "type": "string",
+          "default": "hey jarvis",
+          "description": "Wake phrase to activate listening"
+        },
+        "jarvis.stt.provider": {
+          "type": "string",
+          "enum": ["canary-qwen", "whisper-v3-turbo", "parakeet", "local-whisper"],
+          "default": "whisper-v3-turbo",
+          "description": "Speech-to-text provider"
+        },
+        "jarvis.stt.localWhisperPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to local Faster-Whisper installation"
+        },
+        "jarvis.tts.provider": {
+          "type": "string",
+          "enum": ["os-default", "kokoro", "fish-audio", "elevenlabs"],
+          "default": "os-default",
+          "description": "Text-to-speech provider"
+        },
+        "jarvis.tts.voice": {
+          "type": "string",
+          "default": "default",
+          "description": "Voice to use for TTS"
+        },
+        "jarvis.editorialStyle": {
+          "type": "string",
+          "enum": ["terse", "conversational", "ops"],
+          "default": "conversational",
+          "description": "How verbose should the spoken summaries be"
+        },
+        "jarvis.autoApplyEdits": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically apply edits without confirmation (NOT RECOMMENDED)"
+        },
+        "jarvis.confirmationPhrase": {
+          "type": "string",
+          "default": "ship it",
+          "description": "Phrase required to apply code changes"
+        },
+        "jarvis.secureMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Only listen on push-to-talk (no continuous listening)"
+        },
+        "jarvis.maxReadLength": {
+          "type": "number",
+          "default": 500,
+          "description": "Maximum characters to read aloud"
+        },
+        "jarvis.privacy.localOnly": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep all processing local (no cloud services) - REQUIRED for this project"
+        },
+        "jarvis.llm.provider": {
+          "type": "string",
+          "enum": ["ollama", "llama-cpp", "local-server"],
+          "default": "ollama",
+          "description": "Local LLM provider for intent classification and chatting"
+        },
+        "jarvis.llm.model": {
+          "type": "string",
+          "default": "gpt-oss:20b",
+          "description": "Local LLM model name (e.g., gpt-oss:20b for Ollama)"
+        },
+        "jarvis.llm.endpoint": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Local LLM endpoint URL"
+        },
+        "jarvis.voice.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable voice input (requires Python setup with openWakeWord)"
+        },
+        "jarvis.voice.wakeword": {
+          "type": "string",
+          "default": "hey_jarvis",
+          "enum": ["hey_jarvis", "alexa", "hey_mycroft"],
+          "description": "Wake word model to use (openWakeWord pre-trained models)"
+        },
+        "jarvis.voice.whisperModel": {
+          "type": "string",
+          "default": "tiny",
+          "enum": ["tiny", "base", "small", "medium", "large-v3"],
+          "description": "Whisper model size (larger = more accurate, slower)"
+        },
+        "jarvis.voice.vadSensitivity": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 3,
+          "description": "Voice activity detection sensitivity (0=loose, 3=strict)"
+        },
+        "jarvis.voice.silenceTimeout": {
+          "type": "number",
+          "default": 1500,
+          "minimum": 500,
+          "maximum": 5000,
+          "description": "Milliseconds of silence before finalizing transcription"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "jarvis.toggleListening",
+        "key": "ctrl+shift+j",
+        "mac": "cmd+shift+j"
+      },
+      {
+        "command": "jarvis.toggleMute",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0",
+    "@vscode/test-electron": "^2.3.8",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}
